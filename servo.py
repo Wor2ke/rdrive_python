@@ -1,18 +1,19 @@
-import math
-
 import rdrive as rr
 
-class Servo:
-    __instance = None
 
-    def __new__(cls, *args, **kwargs):
-        if cls.__instance is None:
-            cls.__instance = super().__new__(cls)
-        return cls.__instance
+class ServoMeta(type):
 
-    def __del__(self):
-        Servo.__instance = None
-      
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            instance = super().__call__(*args, **kwargs)
+            cls._instances[cls] = instance
+        return cls._instances
+
+
+class Servo(metaclass=ServoMeta):
+
     def __init__(self, name_interface, name_id, logger):
         logger.info("Initializing ServoApi")
         self.api = rr.ServoApi()
@@ -29,10 +30,10 @@ class Servo:
     def _init_api(self):
         pass
 
-    def start(self, per, logger):
-        logger.info("Start")
+    def start(self, gear, logger):
+        logger.info("Start servo")
 
-        dict = {
+        gear_dict = {
             1: [60., 5800],
             2: [120., 3000],
             3: [240., 1700]
@@ -40,10 +41,11 @@ class Servo:
         self.servo.set_position(360.)
 
         # установить конкретную скорость (градусы/сек)
-        self.servo.set_velocity(dict[per][0])  # 120 #240 #60
+        self.servo.set_velocity(gear_dict[gear][0])  # 120 #240 #60
 
         # сон
         self.api.sleep_ms(3000 * 2)
 
-    def stop(self):
+    def stop(self, logger):
+        logger.info("Stop servo")
         self.servo.set_state_stopped()
