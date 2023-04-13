@@ -30,22 +30,44 @@ class Servo(metaclass=ServoMeta):
     def _init_api(self):
         pass
 
-    def start(self, gear, logger):
-        logger.info("Start servo")
+        def start(self, per, logger):
+        logger.info("Start")
 
-        gear_dict = {
+        dict = {
             1: [60., 5800],
             2: [120., 3000],
             3: [240., 1700]
         }
+        # установка позиции (градусы/обр)
         self.servo.set_position(360.)
 
         # установить конкретную скорость (градусы/сек)
-        self.servo.set_velocity(gear_dict[gear][0])  # 120 #240 #60
+        self.servo.set_velocity(dict[per][0])  # 120 #240 #60
 
         # сон
         self.api.sleep_ms(3000 * 2)
 
-    def stop(self, logger):
-        logger.info("Stop servo")
-        self.servo.set_state_stopped()
+    def get_velocity(self):
+        self.servo.param_cache_setup_entry(rr.APP_PARAM_VELOCITY, True)
+        self.servo.param_cache_update()
+        return self.servo.read_cached_parameter(rr.APP_PARAM_VELOCITY)
+
+    def get_voltage(self):
+        self.servo.param_cache_setup_entry(rr.APP_PARAM_VOLTAGE_INPUT, True)
+        self.servo.param_cache_update()
+        return self.servo.read_cached_parameter(rr.APP_PARAM_VOLTAGE_INPUT)
+
+    def get_temperature(self):
+        self.servo.param_cache_setup_entry(rr.APP_PARAM_TEMPERATURE_ELECTRONICS, True)
+        self.servo.param_cache_update()
+        return self.servo.read_cached_parameter(rr.APP_PARAM_TEMPERATURE_ELECTRONICS)
+
+    def get_amper(self):
+        self.servo.param_cache_setup_entry(rr.APP_PARAM_CURRENT_PHASE, True)
+        self.servo.param_cache_update()
+        return self.servo.read_cached_parameter(rr.APP_PARAM_CURRENT_PHASE)
+
+    def stop(self):
+        logger.info("Stop")
+        # заморозка сервопривода
+        self.servo.freeze()
