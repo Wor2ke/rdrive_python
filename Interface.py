@@ -1,11 +1,10 @@
-import math
+mport math
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 from servo import Servo
 
-
-def interface(INTERFACE_NAME, SERVO_1_ID, logger):
+def interface():
     dec = Servo(INTERFACE_NAME, SERVO_1_ID, logger)
     window = Tk()
     oves = 10.0
@@ -20,10 +19,12 @@ def interface(INTERFACE_NAME, SERVO_1_ID, logger):
     A = 8
     V = 47
     var = DoubleVar()
+    
     window.title("БрГТУ")
     window.geometry('800x500')
-    btn_start = Button(window, text="Старт", bg="blue", fg="white", font=("Arial Bold", 15), command=lambda :dec.start(3, logger), padx=50, pady=50).place(x=60, y=40)
-    btn_stop = Button(window, text="Стоп", bg="blue", fg="white", font=("Arial Bold", 15), command= lambda :dec.stop(), padx=50, pady=50).place(x=300, y=40)
+    
+    btn_start = Button(window, text="Старт", bg="blue", fg="white", font=("Arial Bold", 15), command=lambda :print('start'), padx=50, pady=50).place(x=60, y=40)
+    btn_stop = Button(window, text="Стоп", bg="blue", fg="white", font=("Arial Bold", 15), command= lambda :print("stop"), padx=50, pady=50).place(x=300, y=40)
     lbl = Label(window, text="Введите необходимый коэфициент:", font=("roboto", 14)).place(x=60, y=220)
     entry = Entry(window, width=20, textvariable=var).place(x=60, y=270)
     ok_btn = Button(window, text="Ok", bg="blue", fg="white", font=("Arial Bold", 10), padx=10, pady=10).place(x=190, y=260)
@@ -85,5 +86,18 @@ def interface(INTERFACE_NAME, SERVO_1_ID, logger):
         window.after(1000, update_voltage_label)
     update_voltage_label()
 
-    window.mainloop()
+    Label(window, text="Выберите скорость(обр/мин)", font=("roboto", 14)).place(x=63, y=330)
 
+    def update_button_configer(conf):
+        dec.stop()
+        dec.start(conf)
+
+    Button(window, text="60", bg="blue", fg="white", font=("Arial Bold", 15), command=lambda: update_button_configer(1), padx=17, pady=10).place(x=63, y=370)
+    Button(window, text="120", bg="blue", fg="white", font=("Arial Bold", 15), command=lambda: update_button_configer(2), padx=10, pady=10).place(x=163, y=370)
+    Button(window, text="240", bg="blue", fg="white", font=("Arial Bold", 15), command=lambda: update_button_configer(3), padx=10, pady=10).place(x=263, y=370)
+
+    Label(window, text="1.62 кг", font=("roboto", 14)).place(x=63, y=440)
+    Label(window, text="3.22 кг", font=("roboto", 14)).place(x=163, y=440)
+    Label(window, text="6.31 кг", font=("roboto", 14)).place(x=263, y=440)
+
+    window.mainloop()
